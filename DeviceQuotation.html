@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+
+<head>
+    <title>Device Repository</title>
+    <style>
+        th,
+        td,
+        p,
+        input {
+            font: 14px;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        table,
+        th,
+        td {
+            border: solid 1px RGBA(115, 115, 115,.6);
+            border-collapse: collapse;
+            padding: 2px 3px;
+            text-align: center;
+        }
+
+        th {
+            font-weight: bold;
+        }
+
+        #dGrid{
+            margin: 1% 1% 4% 1%;
+        }
+        input {
+            margin-top: 10px;
+        }
+
+        .hdr {
+            font-size: 18px;
+            font-weight: bold;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: RGBA(242, 80, 34, .7);
+        }
+
+        label {
+            display: inline-block;
+            width: 22%;
+        }
+
+        .fInput {
+            box-sizing: border-box;
+            width: 76%;
+        }
+
+        #container {
+            padding: 1% 25% 1% 25%;
+            background-color: RGBA(255, 185, 0, 0.7);
+            height: 100vh;
+            font-family: Segoe UI,SegoeUI,Helvetica Neue,Helvetica,Arial,sans-serif;
+        }
+        
+        #subBtn {
+            float: right;
+            margin-right: 2%;
+            cursor: pointer;
+            height: 25px;
+        }
+    </style>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:xd_Signature msdt:dt="string"></mso:xd_Signature>
+<mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Editor msdt:dt="string">Balaji M</mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Editor>
+<mso:xd_ProgID msdt:dt="string"></mso:xd_ProgID>
+<mso:_ExtendedDescription msdt:dt="string"></mso:_ExtendedDescription>
+<mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Author msdt:dt="string">Balaji M</mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Author>
+<mso:ComplianceAssetId msdt:dt="string"></mso:ComplianceAssetId>
+<mso:TemplateUrl msdt:dt="string"></mso:TemplateUrl>
+<mso:ContentTypeId msdt:dt="string">0x010100DA82A7F8512D11458DB180023D72D877</mso:ContentTypeId>
+<mso:TriggerFlowInfo msdt:dt="string"></mso:TriggerFlowInfo>
+<mso:_SourceUrl msdt:dt="string"></mso:_SourceUrl>
+<mso:_SharedFileIndex msdt:dt="string"></mso:_SharedFileIndex>
+<mso:TaxCatchAll msdt:dt="string"></mso:TaxCatchAll>
+<mso:MediaServiceImageTags msdt:dt="string"></mso:MediaServiceImageTags>
+<mso:lcf76f155ced4ddcb4097134ff3c332f msdt:dt="string"></mso:lcf76f155ced4ddcb4097134ff3c332f>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <div id="container">
+        <div class="hdr">Device Quotation</div>
+        <div id="dGrid"></div>
+        <div class="hdr">Add New Device Quotation</div>
+        <div id="form">
+            <form>
+                <label for="fName">Device Name</label>
+                <input type="text" id="fName" name="fName" value="" class="fInput"><br>
+                <label for="fCost">Price</label>
+                <input type="text" id="fCost" name="fCost" value="" class="fInput"><br>
+                <label for="fMmry">Memory</label>
+                <input type="text" id="fMmry" name="fMmry" value="" class="fInput"><br>
+                <label for="fStrg">Storage</label>
+                <input type="text" id="fStrg" name="fStrg" value="" class="fInput"><br>
+                
+            </form>
+            <div><input type="button" onclick="addDevice()" value="Submit" id="subBtn"></div>
+        </div>
+
+
+    </div>
+</body>
+
+<script>
+
+
+    var primaryData = [
+        {
+            "Device Name": "Surface Lap 1",
+            "Price": "$123",
+            "Memory": "32 GB DDR4",
+            "Storage": "512 GB"
+        },
+        {
+            "Device Name": "Surface Lap 2",
+            "Price": "$453",
+            "Memory": "16 GB DDR4",
+            "Storage": "256 GB"
+        },
+        {
+            "Device Name": "Surface Lap 3",
+            "Price": "$187",
+            "Memory": "16 GB DDR4",
+            "Storage": "256 GB"
+        },
+        {
+            "Device Name": "Surface Lap 4",
+            "Price": "$187",
+            "Memory": "16 GB DDR4",
+            "Storage": "256 GB"
+        },
+        {
+            "Device Name": "Surface Lap 5",
+            "Price": "$187",
+            "Memory": "16 GB DDR4",
+            "Storage": "256 GB"
+        }
+    ];
+    var deviceData;
+
+    function initData(){
+        deviceData = JSON.parse(window.localStorage.getItem("locMSFTDevice"));
+        if(deviceData){
+            generateGrid();
+        }
+        else{
+            window.localStorage.setItem("locMSFTDevice", JSON.stringify(primaryData));
+            deviceData = JSON.parse(window.localStorage.getItem("locMSFTDevice"));
+            generateGrid();
+        }
+    }
+
+    function generateGrid() {
+
+        var col = [];
+        for (var i = 0; i < deviceData.length; i++) {
+            for (var key in deviceData[i]) {
+                if (col.indexOf(key) === -1) {
+                    col.push(key);
+                }
+            }
+        }
+
+        var table = document.createElement("table");
+
+
+        var tr = table.insertRow(-1);                   
+
+        for (var i = 0; i < col.length; i++) {
+            var th = document.createElement("th");      
+            th.innerHTML = col[i];
+            tr.appendChild(th);
+        }
+
+        for (var i = 0; i < deviceData.length; i++) {
+
+            tr = table.insertRow(-1);
+
+            for (var j = 0; j < col.length; j++) {
+                var tabCell = tr.insertCell(-1);
+                tabCell.innerHTML = deviceData[i][col[j]];
+            }
+        }
+
+        var divContainer = document.getElementById("dGrid");
+        divContainer.innerHTML = "";
+        divContainer.appendChild(table);
+    }
+
+    function addDevice() {
+        var newDevice = {
+            "Device Name": document.getElementById("fName").value,
+            "Price": document.getElementById("fCost").value,
+            "Memory": document.getElementById("fMmry").value,
+            "Storage": document.getElementById("fStrg").value
+        };
+        deviceData.push(newDevice);
+        localStorage.setItem('locMSFTDevice', JSON.stringify(deviceData));
+        initData();
+    }
+    window.onload = initData();
+</script>
+
+</html>
